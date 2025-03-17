@@ -21,7 +21,7 @@ The **Maryland Eligibility Determination** tool processes CSV files containing c
 
 This tool provides **synthetic example data** specific to **Maryland**, but the methodology can be applied to other state datasets.
 
-- The **example dataset** includes **randomized case data** that follows Maryland eligibility laws.
+- The **example dataset** includes **synthetic case data** that follows Maryland eligibility laws.
 - **We do not collect or store** any personally identifiable information (**PII**).
 - Users can **upload their own data** for eligibility determination.
 
@@ -178,13 +178,12 @@ The uploaded CSV file should include the following **required columns**:
    - **Parties CSV**
    - **Cases CSV**
    - **Charges CSV**
-3. **Process the File**: Click **"📩 Submit and Process File"** to analyze the case data.
-4. **Process the File**: Click **"📩 Submit and Process File"** to analyze the case data.
-5. **View Case List**: Cases will be categorized into:
+3. **Process the File**: Click **"Determine Eligibility"** to analyze the case data.
+4. **View Case List**: Cases will be categorized into:
    - ✅ **Eligible Cases**
    - ❌ **Ineligible Cases**
-6. **Check Case Details**: Click the **🔍 button** next to any case for a detailed breakdown.
-7. **Download Processed Data**: Click **"⬇️ Download Processed Cases CSV"** to save the results.
+5. **Check Case Details**: Click the **🔍 button** next to any case for a detailed breakdown.
+6. **Download Processed Data**: Click **"⬇️ Download Processed Cases CSV"** to save the results.
 
 > **Note:** The eligibility determination is based on Maryland expungement laws and predefined rules. Ensure your CSV files meet the expected format for accurate results.
 
