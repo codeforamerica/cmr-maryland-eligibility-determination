@@ -1,0 +1,7 @@
+CaseID,PartyID,Case Title,Case Number,Court System,Location,Case Type,Filing Date,Case Status,Judicial Officer
+1,1,"The State of Maryland vs LOPEZ, JUSTIN",85617564,District Court,Wabash Ave,Criminal - SOC - Application,08/14/2017,Closed,"Joe, Joe"
+2,2,STATE OF MARYLAND VS SMITH JAMES,107028039,District Court,Wabash Ave,Domestic Violence,08/15/2017,Closed,"Joe, Joe"
+3,3,"STATE OF MARYLAND VS TAYLOR, ALEX",557028039,District Court,Wabash Ave,Criminal - SOC - Application,08/15/2017,Closed,"Joe, Joe"
+4,4,"State of Maryland vs. YONKER, JACK",887028039,District Court,Wabash Ave,Criminal - SOC - Application,08/15/2017,Closed,"Joe, Joe"
+5,5,"State of Maryland vs. SIMMONS, JOE",997028039,District Court,Wabash Ave,Criminal - SOC - Application,08/15/2017,Closed,"Joe, Joe"
+6,6,"STATE OF MARYLAND VS HARVARD, JESSICA",102303016,Circuit Court,Baltimore City Circuit Court,Criminal Indictment,07/15/1989,Closed,"Joe, Joe"
