@@ -1,8 +1,7 @@
-
 import streamlit as st
 from datetime import timedelta
 import pandas as pd
-from utils.constants import WAIT_PERIODS, EXCLUDED_MISDEMEANORS, NON_CONVICTION_TERMS
+from utils.constants import REQUIRED_COLUMNS, WAIT_PERIODS, EXCLUDED_MISDEMEANORS, NON_CONVICTION_TERMS
 
 
 def load_example_data():
@@ -103,16 +102,44 @@ def check_eligibility_conditions(case_df, today):
     return f"✅ Eligible" if today >= final_wait_date else f"⏳ Wait until {final_wait_date.strftime('%Y-%m-%d')}"
 
 
-def show_csv_schema():
-    """Displays expected CSV format examples."""
-    with st.expander("ℹ️ Expected Parties (People) CSV Format"):
-        st.code("""PartyID,Name,Race,Sex,DOB,Address,City,State,Zip Code,Aliases
-1,"DOE, JOHN",White,Male,01/01/1980,"123 MAIN ST",ANYTOWN,MD,12345,N/A""", language="csv")
+def show_csv_schema(source_type="csv"):
+    """Displays expected schema format for CSV or SQL sources."""
+    st.subheader("📄 Expected Schema Format")
 
-    with st.expander("ℹ️ Expected Cases CSV Format"):
-        st.code("""CaseID,PartyID,Case Title,Case Number,Court System,Location,Case Type,Filing Date,Case Status,Judicial Officer
-1,1,"State vs DOE, JOHN",123456,District Court,"456 ELM ST",Criminal,01/01/2020,Closed,Judge Smith""", language="csv")
+    for section in ["parties", "cases", "charges"]:
+        title = section.capitalize()
+        with st.expander(f"ℹ️ Expected {title} Format"):
+            st.write("**Required Columns:**")
+            st.code(", ".join(REQUIRED_COLUMNS[section]), language="csv")
 
-    with st.expander("ℹ️ Expected Charges CSV Format"):
-        st.code("""ChargeID,CaseID,Charge No,CJIS Code,Statute Code,Charge Description,Charge Class,Offense Date,Agency Name,Plea,Plea Date,Disposition,Disposition Date
-1,1,1,1-2345,12.345,"SAMPLE CHARGE",Misdemeanor,01/01/2020,"CITY POLICE",Guilty,02/01/2020,"Guilty",03/01/2020""", language="csv")
+            if source_type == "csv":
+                # Show a sample row if it's a CSV source
+                if section == "parties":
+                    st.code(
+                        """1,"DOE, JOHN",White,Male,01/01/1980,"123 MAIN ST",ANYTOWN,MD,12345,N/A""", language="csv")
+                elif section == "cases":
+                    st.code(
+                        """1,1,"State vs DOE, JOHN",123456,District Court,"456 ELM ST",Criminal,01/01/2020,Closed,Judge Smith""", language="csv")
+                elif section == "charges":
+                    st.code(
+                        """1,1,1,1-2345,12.345,"SAMPLE CHARGE",Misdemeanor,01/01/2020,"CITY POLICE",Guilty,02/01/2020,"Guilty",03/01/2020""", language="csv")
+            else:
+                st.info("Data from SQL must include the same required columns.")
+
+
+def validate_schema(df: pd.DataFrame, required_cols: list, name: str) -> bool:
+    """Checks if the given DataFrame has all required columns."""
+    missing = [col for col in required_cols if col not in df.columns]
+    if missing:
+        st.error(
+            f"❌ {name} data is missing required columns: {', '.join(missing)}")
+        return False
+    return True
+
+
+def get_schema_label(data_source: str) -> str:
+    return "📋 View/Hide Expected Schema Format" if data_source == "Load from MySQL" else "📋 View/Hide Expected CSV Format"
+
+
+def get_source_type(data_source: str) -> str:
+    return "sql" if data_source == "Load from MySQL" else "csv"
