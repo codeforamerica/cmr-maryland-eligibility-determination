@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils.constants import REQUIRED_COLUMNS
-from utils.helpers import EXAMPLE_DATA
+from utils.data_loader import EXAMPLE_DATA
 
 
 def handle_file_uploads():
