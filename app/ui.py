@@ -15,6 +15,13 @@ def render_summary():
     ineligible_cases = case_data[~case_data["Eligibility"].str.startswith(
         "✅ Eligible", na=False)]
 
+    if not eligible_cases.empty:
+        st.download_button(
+            label="📥 Download Eligible Cases (CSV)",
+            data=eligible_cases.to_csv(index=False),
+            file_name="eligible_cases.csv",
+            mime="text/csv"
+        )
     st.subheader("📊 Eligibility Summary")
     col1, col2, col3 = st.columns(3)
 
