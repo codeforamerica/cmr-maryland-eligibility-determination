@@ -28,6 +28,10 @@ def initialize_session():
     if "uploaded_files" not in st.session_state:
         st.session_state["uploaded_files"] = {
             file: None for file in REQUIRED_COLUMNS}
+    if "mysql_conn_info" not in st.session_state:
+        st.session_state["mysql_conn_info"] = None
+    if "pending_mysql_load" not in st.session_state:
+        st.session_state["pending_mysql_load"] = False
 
 
 def reset_session_state():
@@ -40,6 +44,7 @@ def reset_session_state():
     st.session_state.show_schema = False
     st.session_state.use_example_data = st.session_state.data_source == "Use example data"
     st.session_state.eligibility_determined = False
+    st.session_state.mysql_conn = None
 
     # Ensure rerun is only called once to avoid duplicate reruns
     if not st.session_state.get("rerun_triggered", False):

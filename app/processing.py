@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import pandas as pd
-from utils.constants import WAIT_PERIODS, EXCLUDED_MISDEMEANORS, NON_CONVICTION_TERMS
-from utils.helpers import categorize_charges, clean_dataframe
+from utils.constants import WAIT_PERIODS, EXCLUDED_MISDEMEANORS, REQUIRED_COLUMNS
+from utils.helpers import categorize_charges, clean_dataframe, validate_schema
 import streamlit as st
 
 
@@ -81,11 +81,19 @@ def determine_eligibility(df):
     return df
 
 
-def process_csv(parties_df, cases_df, charges_df):
+def process_case_data(parties_df, cases_df, charges_df, show_errors=True):
     """
-    Processes and merges case-related data, cleaning and determining eligibility.
+    Processes and merges case-related data from any source, then determines eligibility.
     """
     try:
+        if not all([
+            validate_schema(
+                parties_df, REQUIRED_COLUMNS["parties"], "Parties"),
+            validate_schema(cases_df, REQUIRED_COLUMNS["cases"], "Cases"),
+            validate_schema(charges_df, REQUIRED_COLUMNS["charges"], "Charges")
+        ]):
+            return pd.DataFrame(), pd.DataFrame()
+
         # Merge dataframes on relevant keys
         merged_df = charges_df.merge(
             cases_df, on="CaseID", how="left"
@@ -98,8 +106,9 @@ def process_csv(parties_df, cases_df, charges_df):
 
         # Check if merged data is empty
         if merged_df.empty:
-            st.error(
-                "❌ Merged data is empty! Check if input files contain valid data.")
+            if show_errors:
+                st.error(
+                    "❌ Merged data is empty! Check if input files contain valid data.")
             return pd.DataFrame(), pd.DataFrame()
 
         # Categorize and determine eligibility
@@ -125,5 +134,6 @@ def process_csv(parties_df, cases_df, charges_df):
         return case_data, merged_df
 
     except Exception as e:
-        st.error(f"❌ Error in processing CSV: {str(e)}")
+        if show_errors:
+            st.error(f"❌ Error in processing case data: {str(e)}")
         return pd.DataFrame(), pd.DataFrame()
