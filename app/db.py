@@ -117,3 +117,12 @@ def mark_case_eligible(conn_info, case_number):
     conn.commit()
     cursor.close()
     conn.close()
+
+
+def update_eligible_cases(conn_info, case_df):
+    eligible_cases = case_df[case_df["Eligibility"].str.startswith(
+        "✅ Eligible", na=False)]
+
+    for _, row in eligible_cases.iterrows():
+        mark_case_eligible(conn_info, row["Case Number"])
+
