@@ -125,3 +125,4 @@ def update_eligible_cases(conn_info, case_df):
 
     for _, row in eligible_cases.iterrows():
         mark_case_eligible(conn_info, row["Case Number"])
+
