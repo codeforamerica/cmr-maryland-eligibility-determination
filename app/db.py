@@ -1,5 +1,6 @@
 import pandas as pd
 import mysql.connector  # type: ignore
+from urllib.parse import urlparse
 
 from utils.constants import REQUIRED_COLUMNS
 from utils.helpers import EXAMPLE_DATA
@@ -7,12 +8,32 @@ from utils.helpers import EXAMPLE_DATA
 # --- Connection ---
 
 
+def parse_connection_string(conn_string):
+    """
+    Parse MySQL connection string in format:
+    mysql://user:password@host:port/database
+    """
+    parsed = urlparse(conn_string)
+
+    return {
+        "host": parsed.hostname,
+        "port": parsed.port or 3306,
+        "user": parsed.username,
+        "password": parsed.password,
+        "database": parsed.path.lstrip('/')
+    }
+
+
 def get_connection(conn_info=None):
     """
-    Establishes a MySQL connection using provided config or defaults.
+    Establishes a MySQL connection using provided config or connection string.
     """
     if conn_info is None:
         raise ValueError("Missing connection info")
+
+    # If conn_info is a string, parse it as a connection string
+    if isinstance(conn_info, str):
+        conn_info = parse_connection_string(conn_info)
 
     return mysql.connector.connect(
         host=conn_info["host"],

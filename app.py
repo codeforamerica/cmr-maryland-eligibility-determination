@@ -51,35 +51,28 @@ if st.session_state["data_source"] == "Use example data":
     st.session_state.use_example_data = True
     all_files_uploaded = True
 elif st.session_state["data_source"] == "Load from MySQL":
-    conn_info = st.session_state.get("mysql_conn_info")
+    conn_string = st.session_state.get("mysql_conn_string")
 
-    if not conn_info:
+    if not conn_string:
         with st.form("mysql_connection_form"):
             st.subheader("🔐 Connect to Your MySQL Database")
-            host = st.text_input("Host", value="host")
-            port = st.number_input("Port", value=3306)
-            user = st.text_input("Username", value="root")
-            password = st.text_input(
-                "Password", value="", type="password")
-            database = st.text_input("Database Name", value="db")
+            connection_string = st.text_input(
+                "MySQL Connection String",
+                value="mysql://user:password@host:port/database",
+                help="Format: mysql://user:password@host:port/database"
+            )
             connect = st.form_submit_button("Connect and Load Data")
 
             if connect:
-                st.session_state["mysql_conn_info"] = {
-                    "host": host,
-                    "port": port,
-                    "user": user,
-                    "password": password,
-                    "database": database,
-                }
-                st.session_state["pending_mysql_load"] = True  # <-- NEW FLAG
+                st.session_state["mysql_conn_string"] = connection_string
+                st.session_state["pending_mysql_load"] = True
                 st.rerun()
 
     else:
         if st.session_state.get("pending_mysql_load"):
             with st.spinner("🔄 Connecting to MySQL and loading tables..."):
-                ensure_schema_exists(conn_info)
-                parties_df, cases_df, charges_df = fetch_all_tables(conn_info)
+                ensure_schema_exists(conn_string)
+                parties_df, cases_df, charges_df = fetch_all_tables(conn_string)
 
                 st.session_state.df = charges_df.merge(
                     cases_df, on="CaseID", how="left"
@@ -114,24 +107,24 @@ if all_files_uploaded and not st.session_state.get("file_processed", False):
             )
 
         elif data_source == "Load from MySQL":
-            conn_info = st.session_state.get("mysql_conn_info")
-            if conn_info:
+            conn_string = st.session_state.get("mysql_conn_string")
+            if conn_string:
                 try:
                     with st.spinner("⏳ Processing data and determining eligibility..."):
                         parties_df, cases_df, charges_df = fetch_all_tables(
-                            conn_info)
+                            conn_string)
                         st.session_state.case_data, st.session_state.df = process_case_data(
                             parties_df, cases_df, charges_df
                         )
 
                         # Update eligible column for qualifying cases
                         update_eligible_cases(
-                            conn_info, st.session_state.case_data)
+                            conn_string, st.session_state.case_data)
                         st.success("✅ Eligibility determination complete.")
                 except Exception as e:
                     st.error(f"❌ Failed to fetch/process MySQL data: {e}")
             else:
-                st.error("❌ MySQL connection info is missing.")
+                st.error("❌ MySQL connection string is missing.")
 
         elif data_source == "Use example data":
             st.session_state.case_data, st.session_state.df = process_case_data(
