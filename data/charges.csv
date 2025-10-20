@@ -1,8 +1,8 @@
 
 ChargeID,CaseID,Charge No,CJIS Code,Statute Code,Charge Description,Charge Class,Offense Date,Agency Name,Plea,Plea Date,Disposition,Disposition Date,Jail Term (Years),Probation (Years)
-1,1,1,3-2399,27.342,ASSAULT 2,Misdemeanor,08/14/2017,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,09/11/2017,Probation After Conviction - Guilty,08/30/2017,0,1
-2,1,2,1-0431,27.111,MAL. DESTR. PROP/VALU $300+,Misdemeanor,08/14/2017,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,09/11/2017,Probation After Conviction - Guilty,08/30/2017,0,1
-3,1,3,3-2400,27.342,ASSAULT 2,Felony District Court,08/14/2017,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,09/11/2017,Probation After Conviction - Guilty,08/30/2017,0,1
+1,1,1,1-0431,27.111,MAL. DESTR. PROP/VALU $300+,Misdemeanor,08/14/2017,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,09/11/2017,Probation After Conviction - Guilty,08/30/2017,0,1
+2,1,2,2-2411,27.349,U/U LIVESTOCK MV ETC,Misdemeanor,08/14/2017,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,09/11/2017,Probation After Conviction - Guilty,08/30/2017,0,1
+3,1,3,1-1415,CR.3-203,ROBBERY,Felony,08/14/2017,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,09/11/2017,Probation After Conviction - Guilty,08/30/2017,0,1
 4,2,4,2-2411,27.349,U/U LIVESTOCK MV ETC,Misdemeanor,02/04/2017,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,02/06/2019,Probation After Conviction - Guilty,11/02/2016,0,1
 5,3,1,1-0431,27.111,MAL. DESTR. PROP/VALU $300,Misdemeanor,02/04/2017,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,02/06/2019,Probation Before Judgment,02/15/2017,0,1
 6,3,4,2-2411,27.349,U/U LIVESTOCK MV ETC,Misdemeanor,09/10/2020,QUEEN ANNE'S COUNTY SHERIFF'S DEPT,Guilty,09/17/2020,Probation After Conviction - Guilty,09/29/2020,0,1
