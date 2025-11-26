@@ -57,7 +57,7 @@ def determine_eligibility(df):
             continue
 
         # Felonies must be ineligible
-        if check_condition(case_df["Is Felony"], "❌ Not Eligible - Felony Disposition"):
+        if check_condition(case_df["Is Felony"], "❌ Not Eligible - Felony"):
             most_relevant_dates[case_number] = latest_disposition_date
             continue
 

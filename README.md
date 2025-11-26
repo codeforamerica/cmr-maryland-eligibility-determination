@@ -193,6 +193,6 @@ The uploaded CSV file should include the following **required columns**:
 
 - ✅ **Eligible**: Case meets eligibility criteria.
 - ⏳ **Wait until YYYY-MM-DD**: Case is eligible but requires waiting until the specified date.
-- ❌ **Not Eligible - Felony Disposition**: Case is ineligible due to felony conviction.
+- ❌ **Not Eligible - Felony**: Case is ineligible due to felony conviction.
 - ❌ **Not Eligible - Domestic Violence Case**: Domestic violence cases are not eligible.
 - ❌ **Not Eligible - Excluded Misdemeanor(s)**: The charge falls under excluded misdemeanors.
