@@ -19,12 +19,14 @@ def determine_eligibility(df):
     """
     today = datetime.today()
     eligibility_status = {}
+    most_relevant_dates = {}  # Track the most relevant disposition date per case
 
     for case_number, case_df in df.groupby("Case Number"):
         latest_disposition_date = case_df["Disposition Date"].max()
 
         if pd.isnull(latest_disposition_date):
             eligibility_status[case_number] = "❌ Not Eligible - No valid disposition date"
+            most_relevant_dates[case_number] = None
             continue
 
         case_df["Statute Code"] = case_df["Statute Code"].astype(
@@ -46,38 +48,57 @@ def determine_eligibility(df):
                 for _, row in excluded_charges.iterrows()
             )
             if check_condition(True, f"❌ Not Eligible - Excluded Misdemeanor(s): {reasons}"):
+                most_relevant_dates[case_number] = latest_disposition_date
                 continue
-
-        # Prioritize non-convictions
-        if case_df["Is Non-Conviction"].any():
-            latest_non_conviction_date = case_df.loc[case_df["Is Non-Conviction"],
-                                                     "Disposition Date"].max()
-            final_wait_date = latest_non_conviction_date + \
-                timedelta(days=WAIT_PERIODS["non_conviction"])
-            if check_condition(today >= final_wait_date, "✅ Eligible - Non-Conviction"):
-                continue
-            eligibility_status[
-                case_number] = f"⏳ Wait until {final_wait_date.strftime('%Y-%m-%d')} (Non-Conviction)"
-            continue
 
         # Domestic violence cases must be ineligible
         if check_condition(case_df["Is Domestic Violence"], "❌ Not Eligible - Domestic Violence Case"):
+            most_relevant_dates[case_number] = latest_disposition_date
             continue
 
         # Felonies must be ineligible
         if check_condition(case_df["Is Felony"], "❌ Not Eligible - Felony Disposition"):
+            most_relevant_dates[case_number] = latest_disposition_date
             continue
 
-        # Apply waiting period for misdemeanors
-        final_wait_date = latest_disposition_date + \
-            timedelta(days=WAIT_PERIODS["misdemeanor"])
-        if check_condition(today >= final_wait_date, "✅ Eligible"):
-            continue
-        eligibility_status[
-            case_number] = f"⏳ Wait until {final_wait_date.strftime('%Y-%m-%d')}"
+        # Calculate eligibility dates for all charges based on their type
+        def calculate_eligibility_date(row):
+            """Calculate when a charge becomes eligible."""
+            if pd.isnull(row["Disposition Date"]):
+                return None
+            if row["Is Non-Conviction"]:
+                return row["Disposition Date"] + timedelta(days=WAIT_PERIODS["non_conviction"])
+            else:
+                return row["Disposition Date"] + timedelta(days=WAIT_PERIODS["misdemeanor"])
 
-    # Assign final eligibility status
+        case_df_copy = case_df.copy()
+        case_df_copy["Eligibility Date"] = case_df_copy.apply(
+            calculate_eligibility_date, axis=1)
+
+        # Find the charge with the latest eligibility date (determines case eligibility)
+        max_eligibility_date = case_df_copy["Eligibility Date"].max()
+        determining_charge = case_df_copy[case_df_copy["Eligibility Date"]
+                                          == max_eligibility_date].iloc[0]
+        most_relevant_dates[case_number] = determining_charge["Disposition Date"]
+
+        # Check if the case is eligible based on the determining charge
+        if determining_charge["Is Non-Conviction"]:
+            if today >= max_eligibility_date:
+                eligibility_status[case_number] = "✅ Eligible - Non-Conviction"
+            else:
+                eligibility_status[
+                    case_number] = f"⏳ Wait until {max_eligibility_date.strftime('%Y-%m-%d')} (Non-Conviction)"
+        else:
+            if today >= max_eligibility_date:
+                eligibility_status[case_number] = "✅ Eligible"
+            else:
+                eligibility_status[
+                    case_number] = f"⏳ Wait until {max_eligibility_date.strftime('%Y-%m-%d')}"
+
+    # Assign final eligibility status and most relevant dates
     df["Eligibility"] = df["Case Number"].map(eligibility_status)
+    df["Most Relevant Disposition Date"] = df["Case Number"].map(
+        most_relevant_dates)
     return df
 
 
@@ -116,11 +137,17 @@ def process_case_data(parties_df, cases_df, charges_df, show_errors=True):
             categorize_charges(clean_dataframe(merged_df))
         )
 
-        # Aggregate case-level summary
+        # Aggregate case-level summary using the most relevant disposition date
         case_data = (
             merged_df.groupby("Case Number")
-            .agg({"Name": "first", "Case Type": "first", "Disposition Date": "max", "Eligibility": "first"})
+            .agg({
+                "Name": "first",
+                "Case Type": "first",
+                "Most Relevant Disposition Date": "first",
+                "Eligibility": "first"
+            })
             .reset_index()
+            .rename(columns={"Most Relevant Disposition Date": "Disposition Date"})
         )
 
         # Format disposition date
