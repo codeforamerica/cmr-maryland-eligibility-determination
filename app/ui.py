@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from datetime import timedelta
 from utils.constants import NON_CONVICTION_TERMS, WAIT_PERIODS
 
@@ -210,7 +211,12 @@ def render_case_details():
             charge_waiting_period_passed = charge_eligibility_date and today >= charge_eligibility_date
             is_charge_eligible = case_is_eligible and charge_waiting_period_passed
 
-            disposition_label = f"({charge_row['Disposition Date'].strftime('%Y-%m-%d')})"
+            # Handle missing or NaT disposition dates
+            if pd.isna(charge_row['Disposition Date']):
+                disposition_label = "(No Date)"
+            else:
+                disposition_label = f"({charge_row['Disposition Date'].strftime('%Y-%m-%d')})"
+
             if all_same_disposition:
                 disposition_label += " 👈  **Same Date for All Charges**"
             elif is_most_relevant:
@@ -232,7 +238,9 @@ def render_case_details():
                 col2.write(f"**Disposition:** {charge_row['Disposition']}")
 
                 # Show disposition date in green if charge is eligible
-                if is_charge_eligible:
+                if pd.isna(charge_row['Disposition Date']):
+                    col2.write(f"**Disposition Date:** No Date")
+                elif is_charge_eligible:
                     col2.write(f"**Disposition Date:** :green[{charge_row['Disposition Date'].strftime('%Y-%m-%d')}]")
                 else:
                     col2.write(f"**Disposition Date:** {charge_row['Disposition Date'].strftime('%Y-%m-%d')}")
