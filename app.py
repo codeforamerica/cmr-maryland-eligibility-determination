@@ -11,14 +11,24 @@ from utils.helpers import EXAMPLE_DATA, show_csv_schema
 # Initialize session state
 initialize_session()
 
-st.set_page_config(page_title="Maryland Eligibility Checker", layout="wide")
-st.title("Maryland Eligibility Checker")
+st.set_page_config(page_title="Eligibility Checker", layout="wide")
+st.title("Eligibility Checker")
+MD_DATA_SOURCE_OPTIONS = ["Use example data",
+                          "Upload your own data", "Load from MySQL"]
+HI_DATA_SOURCE_OPTIONS = ["Use example data"]
 
 # Handle user selection for data source
 if st.session_state.case_data is None:
+    selected_state = st.selectbox(
+        "Select state:", options=["Maryland", "Hawaii"],
+        index=0, key="selected_state"
+    )
+    if st.session_state["selected_state"] == "Hawaii":
+        data_source_options = HI_DATA_SOURCE_OPTIONS
+    else:
+        data_source_options = MD_DATA_SOURCE_OPTIONS
     data_source = st.radio(
-        "Select data source:", ["Use example data",
-                                "Upload your own data", "Load from MySQL"],
+        "Select data source:", data_source_options,
         index=0, key="data_source"
     )
 
@@ -127,11 +137,13 @@ if all_files_uploaded and not st.session_state.get("file_processed", False):
                 st.error("❌ MySQL connection string is missing.")
 
         elif data_source == "Use example data":
+            print("Using example data")
             st.session_state.case_data, st.session_state.df = process_case_data(
                 EXAMPLE_DATA["parties"],
                 EXAMPLE_DATA["cases"],
                 EXAMPLE_DATA["charges"]
             )
+            print(st.session_state.case_data.head())
 
         st.session_state.uploaded_files = {
             file: None for file in REQUIRED_COLUMNS

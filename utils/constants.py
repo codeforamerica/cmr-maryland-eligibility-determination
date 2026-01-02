@@ -15,6 +15,9 @@ NON_CONVICTION_TERMS = ["DISMISSED",
 
 
 WAIT_PERIODS = {
-    "misdemeanor": 7 * 365,  # 7 years
-    "non_conviction": 3 * 365  # 3 years
+    "Maryland": {
+        "misdemeanor": 7 * 365,  # 7 years
+        "non_conviction": 3 * 365  # 3 years
+    }
+
 }
