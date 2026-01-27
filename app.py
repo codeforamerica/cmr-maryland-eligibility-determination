@@ -11,8 +11,9 @@ from utils.helpers import EXAMPLE_DATA, show_csv_schema
 # Initialize session state
 initialize_session()
 
-st.set_page_config(page_title="Maryland Eligibility Checker", layout="wide")
-st.title("Maryland Eligibility Checker")
+st.set_page_config(
+    page_title="Maryland automated eligibility identification (Proof of Concep)", layout="wide")
+st.title("Maryland automated eligibility identification (Proof of Concept)")
 
 # Handle user selection for data source
 if st.session_state.case_data is None:
@@ -72,7 +73,8 @@ elif st.session_state["data_source"] == "Load from MySQL":
         if st.session_state.get("pending_mysql_load"):
             with st.spinner("🔄 Connecting to MySQL and loading tables..."):
                 ensure_schema_exists(conn_string)
-                parties_df, cases_df, charges_df = fetch_all_tables(conn_string)
+                parties_df, cases_df, charges_df = fetch_all_tables(
+                    conn_string)
 
                 st.session_state.df = charges_df.merge(
                     cases_df, on="CaseID", how="left"
